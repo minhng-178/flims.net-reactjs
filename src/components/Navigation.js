@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -13,7 +13,10 @@ import {
   ListItemButton,
   ListItemText,
   Drawer,
-  colors,
+  Tooltip,
+  Avatar,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
@@ -21,7 +24,9 @@ import InfoIcon from "@mui/icons-material/Info";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import ContactsIcon from "@mui/icons-material/Contacts";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import GoogleIcon from "@mui/icons-material/Google";
+import { UserAuth } from "../context/AuthConext";
 
 const drawerWidth = 240;
 
@@ -32,6 +37,44 @@ export default function Navigation(props) {
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const { googleSignIn, user, logOut } = UserAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const navigate = useNavigate();
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (user != null) {
+      navigate("/");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    setAnchorElUser(null);
+  }, [user]);
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -77,82 +120,136 @@ export default function Navigation(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex", mb: 4 }}>
-      <CssBaseline />
-      <AppBar component="nav" sx={{ backgroundColor: "#1abc9c" }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
+    <>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar component="nav" sx={{ backgroundColor: "black" }}>
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="end"
+              onClick={handleDrawerToggle}
+              sx={{ ml: 2, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <Link to="/">
+                <Button
+                  size="large"
+                  startIcon={<PlayCircleIcon />}
+                  sx={{
+                    color: "#fff",
+                    fontSize: "20px",
+                    fontWeight: 700,
+                    mr: { xs: 0, sm: 2 },
+                  }}
+                >
+                  FLIMS.NET
+                </Button>
+              </Link>
+            </Box>
+            <Box sx={{ display: { xs: "none", sm: "block" }, flexGrow: 1 }}>
+              <Link to="/">
+                <Button sx={{ color: "#fff" }} startIcon={<HomeIcon />}>
+                  Home
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button sx={{ color: "#fff" }} startIcon={<InfoIcon />}>
+                  About
+                </Button>
+              </Link>
+              <Link to="/news">
+                <Button sx={{ color: "#fff" }} startIcon={<NewspaperIcon />}>
+                  News
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button sx={{ color: "#fff" }} startIcon={<ContactsIcon />}>
+                  Contact
+                </Button>
+              </Link>
+            </Box>
+            <Box>
+              {user?.displayName ? (
+                <div>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt={user.email} src={user.photoURL} />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">
+                        <Link
+                          to="/dashboard"
+                          style={{ textDecoration: "none" }}
+                        >
+                          Dashboard
+                        </Link>
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem>
+                      <Typography textAlign="center" onClick={handleSignOut}>
+                        Logout
+                      </Typography>
+                    </MenuItem>
+                  </Menu>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    onClick={handleGoogleSignIn}
+                    color="inherit"
+                    startIcon={<GoogleIcon />}
+                    sx={{ borderColor: "#fff", color: "#fff" }}
+                  >
+                    Login
+                  </Button>
+                </>
+              )}
+            </Box>
+          </Toolbar>
+        </AppBar>
+        <Box component="nav">
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
             sx={{
-              flexGrow: 1,
-              display: { xs: "none", sm: "block" },
-              fontWeight: "700",
+              display: { xs: "block", sm: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
             }}
           >
-            <Link to="/">
-              <Button
-                size="large"
-                startIcon={<PlayCircleIcon />}
-                sx={{ color: "#fff", fontSize: "20px", fontWeight: 700 }}
-              >
-                FLIMS.NET
-              </Button>
-            </Link>
-          </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Link to="/">
-              <Button sx={{ color: "#fff" }} startIcon={<HomeIcon />}>
-                Home
-              </Button>
-            </Link>
-            <Link to="/about">
-              <Button sx={{ color: "#fff" }} startIcon={<InfoIcon />}>
-                About
-              </Button>
-            </Link>
-            <Link to="/news">
-              <Button sx={{ color: "#fff" }} startIcon={<NewspaperIcon />}>
-                News
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button sx={{ color: "#fff" }} startIcon={<ContactsIcon />}>
-                Contact
-              </Button>
-            </Link>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Box component="nav">
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
+            {drawer}
+          </Drawer>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

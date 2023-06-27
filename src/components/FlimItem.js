@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import {
   Card,
@@ -10,15 +10,25 @@ import {
   Button,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import { useDispatch } from "react-redux";
+import { setFlimId } from "../redux/action";
 
 function FlimItem({ flim }) {
   const [ref, inView] = useInView({
     threshold: 0.1,
   });
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleFlimClick = (flimId) => {
+    dispatch(setFlimId(flimId));
+    navigate("/detailflims");
+  };
+
   return (
     <div ref={ref} className={`flim ${inView ? "visible" : ""}`}>
-      <Card raised sx={{ maxWidth: 500 }}>
+      <Card raised sx={{ maxWidth: 500, bgcolor: "#fafafa" }}>
         <CardMedia
           component="img"
           height="600px"
@@ -57,16 +67,15 @@ function FlimItem({ flim }) {
             alignItems: "center",
           }}
         >
-          <Link to={`detailflims/${flim.id}`}>
-            <Button
-              size="medium"
-              variant="contained"
-              color="primary"
-              startIcon={<InfoIcon />}
-            >
-              Detail
-            </Button>
-          </Link>
+          <Button
+            size="medium"
+            variant="contained"
+            color="primary"
+            onClick={() => handleFlimClick(flim.id)}
+            startIcon={<InfoIcon />}
+          >
+            Detail
+          </Button>
         </CardActions>
       </Card>
     </div>

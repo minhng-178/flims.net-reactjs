@@ -1,20 +1,27 @@
-import React, { Component } from "react";
-import { data2 } from "../shared/ListOfFilms";
-import { data1 } from "../shared/ListOfPlayers";
-import PlayersPresentation from "./PlayersPresentation";
+import { useState, useEffect } from "react";
 import Flims from "./Flims";
 
-export class Main extends Component {
-  constructor() {
-    super();
-    this.state = {
-      players: data1,
-      flims: data2,
+function Main() {
+  const [APIData, setAPIData] = useState([]);
+  const baseURL = `https://6492b384428c3d2035d084cd.mockapi.io/flims`;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(baseURL);
+        if (!response.ok) {
+          throw new Error(`HTTP Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAPIData(data);
+      } catch (error) {
+        console.log(error.message);
+      }
     };
-  }
-  render() {
-    return <Flims flims={this.state.flims} />;
-    //return <PlayersPresentation players={this.state.players} />;
-  }
+    fetchData();
+  }, [baseURL]);
+
+  return <Flims flims={APIData} />;
 }
+
 export default Main;

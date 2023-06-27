@@ -6,7 +6,7 @@ function Footer() {
       sx={{
         width: "100%",
         height: "auto",
-        backgroundColor: "#16a085",
+        backgroundColor: "black",
         paddingTop: "1rem",
         paddingBottom: "1rem",
         marginTop: "50px",
@@ -20,7 +20,7 @@ function Footer() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography color="textSecondary" variant="subtitle1">
+            <Typography color="white" variant="subtitle1">
               {`${new Date().getFullYear()}  | MinhNVA | K16 | FPT`}
             </Typography>
           </Grid>

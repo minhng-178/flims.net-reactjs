@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
 import React from "react";
+import { useState, useEffect } from "react";
 const themes = {
   dark: {
-    backgroundColor: "black",
+    backgroundColor: "#ccc",
     color: "white",
   },
   light: {
     backgroundColor: "white",
-    color: "white",
+    color: "black",
   },
 };
 const initialState = {
@@ -16,11 +16,13 @@ const initialState = {
   toggle: () => {},
 };
 const ThemeContext = React.createContext(initialState);
+
 function ThemeProvider({ children }) {
-  const [dark, setDark] = useState(false); // Default theme is light
+  const [dark, setDark] = useState(false);
   // On mount, read the preferred theme from the persistence
   useEffect(() => {
     const isDark = localStorage.getItem("dark") === "true";
+    //store the state mode to the local storage
     setDark(isDark);
   }, [dark]);
   // To toggle between dark and light modes

@@ -23,6 +23,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { genreList } from "../shared/ListOfGenre";
+import { validCountries } from "../shared/ListOfNation";
+import ReactPlayer from "react-player";
 
 const Image = styled("img")({
   maxWidth: "100%",
@@ -42,14 +44,21 @@ function Add() {
       .url("Invalid image URL")
       .required("Image URL is required"),
     title: Yup.string().required("Title is required"),
-    year: Yup.string()
-      .matches(/^\d{4}$/, "Year must be in YYYY format")
+    year: Yup.number()
+      .typeError("Year must be a number")
+      .integer("Year must be an integer")
+      .min(1900, "Year must be greater than or equal to 1900")
+      .max(new Date().getFullYear(), "Year cannot be in the future")
       .required("Year is required"),
-    nation: Yup.string().required("Nation is required"),
+    nation: Yup.string()
+      .required("Nation is required")
+      .oneOf(validCountries, "Invalid nation"),
     genre: Yup.array()
       .of(Yup.string())
       .min(1, "At least one genre is required"),
-    summary: Yup.string().required("Summary is required"),
+    summary: Yup.string()
+      .required("Summary is required")
+      .min(7, "Summary must be at least 7 characters long"),
     clip: Yup.string()
       .test(
         "is-embed-link",
@@ -66,7 +75,7 @@ function Add() {
   const initialValues = {
     image: "",
     title: "",
-    year: "",
+    year: null,
     nation: "",
     genre: [],
     summary: "",
@@ -157,6 +166,7 @@ function Add() {
                 sx: { fontSize: "1rem", pb: 1 },
               }}
             />
+
             <TextField
               fullWidth
               id="nation"
@@ -227,6 +237,16 @@ function Add() {
                 sx: { fontSize: "1rem", pb: 1 },
               }}
             />
+            {formik.values.clip && (
+              <Wrap>
+                <ReactPlayer
+                  url={formik.values.clip}
+                  controls
+                  width={400}
+                  height={300}
+                />
+              </Wrap>
+            )}
             <Typography align="right">
               <Button
                 color="primary"

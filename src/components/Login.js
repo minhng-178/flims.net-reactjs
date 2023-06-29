@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthConext";
 
 export default function Login() {
-  const { googleSignIn, user } = UserAuth();
-
+  const { googleSignIn } = UserAuth();
+  const user = sessionStorage.getItem("user");
   const navigate = useNavigate();
   const handleGoogleSignIn = async () => {
     try {
@@ -14,11 +14,10 @@ export default function Login() {
       console.log(error);
     }
   };
-  useEffect(() => {
-    if (user != null) {
-      navigate("/dashboard");
-    }
-  }, [user]);
+
+  if (user != null) {
+    navigate("/dashboard");
+  }
 
   return (
     <div>

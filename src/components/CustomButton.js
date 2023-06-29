@@ -37,3 +37,38 @@ export const BootstrapButton = styled(Button)({
     boxShadow: "0 0 0 0.2rem rgba(0,123,255,.5)",
   },
 });
+
+export const TableButton = styled(Button)({
+  boxShadow: "none",
+  fontWeight: "initial",
+  textTransform: "none",
+  lineHeight: 1.5,
+  backgroundColor: "none",
+  color: "black",
+  borderColor: "black",
+  fontFamily: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    '"Segoe UI"',
+    "Roboto",
+    '"Helvetica Neue"',
+    "Arial",
+    "sans-serif",
+    '"Apple Color Emoji"',
+    '"Segoe UI Emoji"',
+    '"Segoe UI Symbol"',
+  ].join(","),
+  "&:hover": {
+    backgroundColor: "none",
+    borderColor: "none",
+    boxShadow: "none",
+  },
+  "&:active": {
+    boxShadow: "none",
+    backgroundColor: "none",
+    borderColor: "none",
+  },
+  "&:focus": {
+    boxShadow: "none",
+  },
+});

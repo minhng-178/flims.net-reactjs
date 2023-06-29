@@ -47,7 +47,11 @@ export default function Navigation(props) {
     setAnchorElUser(null);
   };
 
-  const { googleSignIn, user, logOut } = UserAuth();
+  const { googleSignIn, logOut } = UserAuth();
+
+  const user = sessionStorage.getItem("user");
+
+  const myUser = JSON.parse(user);
 
   const handleSignOut = async () => {
     try {
@@ -66,11 +70,6 @@ export default function Navigation(props) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    if (user != null) {
-      navigate("/");
-    }
-  }, [user]);
 
   useEffect(() => {
     setAnchorElUser(null);
@@ -173,11 +172,11 @@ export default function Navigation(props) {
               </Link>
             </Box>
             <Box>
-              {user?.displayName ? (
+              {myUser?.displayName ? (
                 <div>
                   <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      <Avatar alt={user.email} src={user.photoURL} />
+                      <Avatar alt={myUser.email} src={myUser.photoURL} />
                     </IconButton>
                   </Tooltip>
                   <Menu
@@ -196,16 +195,11 @@ export default function Navigation(props) {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">
-                        <Link
-                          to="/dashboard"
-                          style={{ textDecoration: "none" }}
-                        >
-                          Dashboard
-                        </Link>
-                      </Typography>
-                    </MenuItem>
+                    <Link to="/dashboard" style={{ textDecoration: "none" }}>
+                      <MenuItem onClick={handleCloseUserMenu}>
+                        <Typography textAlign="center">Dashboard</Typography>
+                      </MenuItem>
+                    </Link>
                     <MenuItem>
                       <Typography textAlign="center" onClick={handleSignOut}>
                         Logout
